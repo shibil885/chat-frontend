@@ -8,5 +8,10 @@ import { Component } from '@angular/core';
   styleUrl: './chat-list.component.css'
 })
 export class ChatListComponent {
+  ngOnInit(): void {
+  }
 
+  private _getAllChat() {
+    
+  }
 }
