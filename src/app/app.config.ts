@@ -8,10 +8,11 @@ import {
   withInterceptors,
 } from '@angular/common/http';
 import { httpInterceptorFn } from './interceptors/error.inerceptor';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(withFetch(), withInterceptors([httpInterceptorFn])),
+    provideHttpClient(withFetch(), withInterceptors([httpInterceptorFn])), provideAnimationsAsync(),
   ],
 };
