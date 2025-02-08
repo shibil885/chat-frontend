@@ -9,29 +9,25 @@ import { IChatMessage } from '../../../model/messages/message.model';
 @Injectable({
   providedIn: 'root',
 })
-export class ChatService {
+export class MessageService {
   // private readonly _BASE_URL = import.meta.env.NG_APP_BASE_URL;
   private readonly _BASE_URL = 'http://localhost:3000';
-  private readonly _api = `${this._BASE_URL}/chat`;
+  private readonly _api = `${this._BASE_URL}/message`;
   constructor(private _http: HttpClient) {}
 
-  getAllChats() {
-    return this._http.get<IApiResponse<IChat[]>>(`${this._api}/getAllChat`, {
-      withCredentials: true,
-    });
-  }
-
-  usersToChat() {
-    return this._http.get<IApiResponse<IUser[]>>(`${this._api}/newUsers`, {
-      withCredentials: true,
-    });
-  }
-
-  creatOrGetAOneOnOneChat(receiverId: string) {
-    return this._http.post<IApiResponse<IChat>>(
-      `${this._api}/getOrCreate/${receiverId}`,
-      {},
+  addMessage(chatId: string, content: string) {
+    return this._http.post<IApiResponse<IChatMessage>>(
+      `${this._api}/addmessage/${chatId}`,
+      { content },
       { withCredentials: true }
+    );
+  }
+  fetchAllMessages(chatId?: string) {
+    return this._http.get<IApiResponse<IChatMessage[]>>(
+      `${this._api}/messages/${chatId}`,
+      {
+        withCredentials: true,
+      }
     );
   }
 }

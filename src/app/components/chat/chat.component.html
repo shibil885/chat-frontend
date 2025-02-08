@@ -1,12 +1,12 @@
-<main class="bg-gray-50 min-h-screen pt-5">
+<main class="bg-zinc-900 min-h-screen pt-5">
     <!-- Main Container -->
-    <div class="max-w-[90vw] mx-auto flex gap-4 h-[95vh] bg-white shadow-lg rounded-xl overflow-hidden">
+    <div class="max-w-[90vw] mx-auto flex h-[95vh] bg-zinc-800 shadow-lg rounded-xl overflow-hidden">
         <!-- Left Sidebar (Chat List) -->
-        <div class="hidden md:flex flex-col w-[30%] bg-white border-r">
+        <div class="hidden md:flex flex-col w-[30%] bg-zinc-800 border-r border-black">
             <!-- Header Section -->
-            <div class="sticky top-0 z-50 bg-white p-4 border-b flex items-center justify-between">
+            <div class="sticky top-0 z-50 bg-zinc-800 p-4 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <h1 class="font-bold text-2xl">Chats</h1>
+                    <h1 class="font-bold text-2xl text-white">Chats </h1>
                 </div>
                 <div class="flex space-x-2">
                     <ng-container *ngIf="!showNewChatList;else clearNewChatTemplate">
@@ -31,69 +31,76 @@
                 <!-- Search Bar -->
 
                 <!-- Chat List -->
-                <app-chat-list></app-chat-list>
+                <ng-container *ngIf="chats.length;else noChat">
+                    <app-chat-list *ngFor="let item of chats" [chat]="item" (selectChatEvent)="createOrGetAOneOnOneChat($event)"></app-chat-list>
+                </ng-container>
+                <ng-template #noChat>
+                    <p class="text-center text-zinc-700 mt-3">No chats available</p>
+                </ng-template>
                 <!-- Chat List -->
-                 
+
             </div>
 
-            <app-new-chat-list *ngIf="showNewChatList"></app-new-chat-list>
+            <app-new-chat-list *ngIf="showNewChatList"
+                (addNewChatEvent)="createOrGetAOneOnOneChat($event)">
+            </app-new-chat-list>
 
         </div>
 
         <!-- Right Chat View -->
-        <div class="flex-1 flex flex-col bg-gray-50">
-            <!-- Chat Header -->
-            <div class="sticky top-0 z-30 bg-white p-4 border-b flex items-center justify-between">
-                <button class="md:hidden">
-                    <i class="fas fa-arrow-left text-gray-500"></i>
-                </button>
-                <div class="flex items-center space-x-3">
-                    <img src="https://pics.craiyon.com/2023-07-09/2397d134ccee4679bfa3de7f100a62f4.webp" alt="Contact"
-                        class="rounded-full w-10 h-10">
-                    <div>
-                        <h3 class="font-medium">Sarah</h3>
-                        <span class="text-sm text-gray-500">Online</span>
-                    </div>
-                </div>
-                <div class="flex space-x-2">
-                    <button><i class="fas fa-video text-gray-500"></i></button>
-                    <button><i class="fas fa-phone text-gray-500"></i></button>
-                    <button><i class="fas fa-ellipsis-v text-gray-500"></i></button>
-                </div>
-            </div>
-
-            <!-- Chat Messages -->
-            <div class="flex-1 overflow-y-auto px-4 pt-4 pb-32">
-                <!-- Sample Messages -->
-                <div class="space-y-4">
-                    <!-- Received Message -->
-                    <div class="flex justify-start">
-                        <div class="bg-gray-100 rounded-lg px-4 py-2 max-w-[70%]">
-                            <p class="text-sm">Hi there!</p>
-                            <span class="text-xs text-gray-400 mt-1">09:30</span>
-                        </div>
-                    </div>
-
-                    <!-- Sent Message -->
-                    <div class="flex justify-end">
-                        <div class="bg-blue-500 rounded-lg px-4 py-2 max-w-[70%]">
-                            <p class="text-sm text-white">How are you?</p>
-                            <span class="text-xs text-blue-200 mt-1">09:31</span>
+        <ng-container *ngIf="selectedChat; else noSelectedChat">
+            <div class="flex-1 flex flex-col bg-zinc-800">
+                <!-- Chat Header -->
+                <div class="sticky top-0 z-30 bg-zinc-800 p-4 border-b border-black flex items-center justify-between">
+                    <button class="md:hidden">
+                        <i class="fas fa-arrow-left text-gray-500"></i>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <img src="https://pics.craiyon.com/2023-07-09/2397d134ccee4679bfa3de7f100a62f4.webp"
+                            alt="Contact" class="rounded-full w-10 h-10">
+                        <div>
+                            <h3 class="font-medium text-white">{{getName}}</h3>
+                            <span class="text-sm text-gray-500">Online</span>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Message Input -->
-            <div class="sticky bottom-0 bg-white border-t p-4">
-                <div class="flex items-center space-x-3 bg-gray-50 rounded-lg p-2">
-                    <button><i class="fas fa-smile text-gray-500"></i></button>
-                    <input type="text" placeholder="Type a message..." class="flex-1 bg-transparent focus:outline-none">
-                    <button><i class="fas fa-camera text-gray-500"></i></button>
-                    <button><i class="fas fa-paperclip text-gray-500"></i></button>
-                    <button><i class="fas fa-microphone text-gray-500"></i></button>
+                <!-- Chat Messages -->
+                <div class="flex-1 overflow-y-auto px-4 pt-4 pb-3">
+                     <app-message-container  [messages]="messages"></app-message-container>
+                </div>
+
+                <!-- Message Input -->
+                <div class="sticky bottom-0 bg-zinc-800 border-t border-black p-4">
+                    <div class="flex items-center space-x-3 bg-zinc-800 rounded-lg p-2">
+                        <button>
+                            <i class="fas fa-smile text-white"></i>
+                        </button>
+                        <button>
+                            <button><i class="fas fa-paperclip text-white"></i></button>
+                        </button>
+                        <input type="text" placeholder="Type a message..."
+                            class="flex-1 bg-zinc-800 focus:outline-none text-white" [(ngModel)]="content">
+                        <button (click)="addMessage()"><i class="fas fa-share text-white"></i></button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </ng-container>
+        <ng-template #noSelectedChat>
+            <div class="flex-1 flex flex-col bg-zinc-800">
+
+                <!-- Chat Messages -->
+                <div class="flex-1 overflow-y-auto px-4 pt-4 pb-32">
+                    <!-- Sample Messages -->
+                    <div class="space-y-4">
+                        <div class="flex justify-center items-center">
+                            <h1 class="text-4xl text-zinc-300 font-semibold text-center">Hala-chat for you</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+
+
     </div>
 </main>

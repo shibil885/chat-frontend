@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IUser } from '../../../model/user/user.model';
 import { ChatService } from '../../../shared/services/chat/chat.service';
@@ -14,7 +14,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class NewChatListComponent {
   users: IUser[] = [];
   colors: string[] = ['#ff6b54', '#34a853', '#4285f4', '#fbbc05'];
-
+  @Output() addNewChatEvent = new EventEmitter();
   constructor(private _chatService: ChatService) {}
 
   ngOnInit(): void {
@@ -36,6 +36,6 @@ export class NewChatListComponent {
   }
 
   onSelectUser(user: IUser) {
-    console.log(user);
+    this.addNewChatEvent.emit(user._id);
   }
 }

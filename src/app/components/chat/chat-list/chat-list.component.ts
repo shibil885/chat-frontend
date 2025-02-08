@@ -1,17 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { IChat } from '../../../model/chat/chat.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-chat-list',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './chat-list.component.html',
-  styleUrl: './chat-list.component.css'
+  styleUrl: './chat-list.component.css',
 })
 export class ChatListComponent {
-  ngOnInit(): void {
+  @Input() chat!: IChat;
+  @Output() selectChatEvent = new EventEmitter();
+
+  get getName() {
+    return this.chat.participants.filter(
+      (user) => user._id !== this.chat.loggedinuser
+    )[0].username;
   }
 
-  private _getAllChat() {
-    
+  onSelectChat() {
+    const receiverId = this.chat.participants.filter(
+      (user) => user._id !== this.chat.loggedinuser
+    )[0]._id;    
+    this.selectChatEvent.emit(receiverId);
   }
 }
