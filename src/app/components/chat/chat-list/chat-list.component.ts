@@ -15,13 +15,13 @@ export class ChatListComponent {
 
   get getName() {
     return this.chat.participants.filter(
-      (user) => user._id !== this.chat.loggedinuser
+      (user) => user._id !== this.chat.loggeduser
     )[0].username;
   }
 
   onSelectChat() {
     const receiverId = this.chat.participants.filter(
-      (user) => user._id !== this.chat.loggedinuser
+      (user) => user._id !== this.chat.loggeduser
     )[0]._id;    
     this.selectChatEvent.emit(receiverId);
   }

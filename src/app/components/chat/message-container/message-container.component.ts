@@ -11,10 +11,4 @@ import { IChatMessage } from '../../../model/messages/message.model';
 })
 export class MessageContainerComponent {
   @Input() messages!: IChatMessage[]
-  ngAfterViewInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    console.log('messages', this.messages);
-    
-  }
 }

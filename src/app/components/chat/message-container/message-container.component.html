@@ -1,15 +1,14 @@
 <div class="space-y-4">
     <ng-container *ngIf="messages?.length; else noMessages">
-        <div class="flex justify-start" *ngFor="let msg of messages"
-            [ngClass]="{'justify-end': msg.sender == msg.loggeduser}">
-            <div class="bg-zinc-700 text-white rounded-lg px-4 py-2 max-w-[70%]"
-                [ngClass]="{'bg-green-700': msg.sender == msg.loggeduser}">
-                <p class="text-sm">{{msg.content}}</p>
-                <span class="text-xs text-gray-400 mt-1">{{msg.createdAt | date:'shortTime'}}</span>
+        <div class="flex"
+            *ngFor="let msg of messages"
+            [ngClass]="{'justify-end': msg.sender === msg.loggeduser, 'justify-start': msg.sender !== msg.loggeduser}">
+            <div class="rounded-lg px-4 py-2 max-w-[70%] text-white"
+                [ngClass]="{'bg-green-700': msg.sender === msg.loggeduser, 'bg-zinc-700': msg.sender !== msg.loggeduser}">
+                <p class="text-sm">{{ msg.content }}</p>
+                <span class="text-xs text-gray-400 mt-1">{{ msg.createdAt | date:'shortTime' }}</span>
             </div>
         </div>
     </ng-container>
-    <!-- no chat -->
-    <ng-template #noMessages>
-    </ng-template>
+    <ng-template #noMessages></ng-template>
 </div>

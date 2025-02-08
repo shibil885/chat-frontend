@@ -10,6 +10,7 @@ export const httpInterceptorFn: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   return next(req).pipe(
+  
     catchError((error) => {
       if (error.error.code === 401) {
         router.navigate(['/auth']);

@@ -51,7 +51,8 @@ export class ChatComponent {
   private _fetchAllMessages(chatId?: string) {
     this._messageService.fetchAllMessages(chatId).subscribe((res) => {
       if (res.data) {
-        console.log('res', res);
+        console.log(res);
+        
         this.messages = res.data;
       }
     });
@@ -61,8 +62,10 @@ export class ChatComponent {
     if (this.showNewChatList) this.showNewChatList = !this.showNewChatList;
     this._chatService.creatOrGetAOneOnOneChat(userId).subscribe((res) => {
       if (res.data) this.selectedChat = res.data;
-      this._fetchAllMessages(res.data?._id)
+      console.log(res.data);
+      
       this.fetchChats();
+      this._fetchAllMessages(res.data?._id);
     });
   }
 
@@ -71,14 +74,21 @@ export class ChatComponent {
       .addMessage(this.selectedChat._id, this.content)
       .subscribe((res) => {
         this.content = '';
-        this._fetchAllMessages(this.selectedChat._id)
+        this._fetchAllMessages(this.selectedChat._id);
         this.fetchChats();
       });
   }
 
   get getName() {
-    return this.selectedChat.participants.filter(
-      (particopant) => particopant._id !== this.selectedChat.loggedinuser
-    )[0].username;
+    const name = this.selectedChat.participants.filter((participant) => {
+      // console.log('participant -->', participant);
+      // console.log('logged user', this.selectedChat.loggedinuser);
+
+      return participant._id !== this.selectedChat.loggeduser;
+    })[0].username;
+
+    // console.log('selected user name', name);
+
+    return name;
   }
 }

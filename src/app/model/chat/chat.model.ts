@@ -8,7 +8,7 @@ export interface IChat {
   lastMessage?: IChatMessage[];
   participants: IUser[];
   admin?: string;
-  loggedinuser?: string;
+  loggeduser?: string;
   messages: IChatMessage[];
   createdAt: string;
   updatedAt: string;
