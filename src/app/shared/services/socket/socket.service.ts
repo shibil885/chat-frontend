@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
+import { Socket } from 'ngx-socket-io';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SocketService {
-
-  constructor() { }
+  constructor(private _socket: Socket) {}
 }
