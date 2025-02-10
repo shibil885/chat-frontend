@@ -9,6 +9,7 @@ export interface IChat {
   participants: IUser[];
   admin?: string;
   loggeduser?: string;
+  sender?: string;
   messages: IChatMessage[];
   createdAt: string;
   updatedAt: string;

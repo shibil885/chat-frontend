@@ -2,8 +2,14 @@
     <!-- Sample Chat Items -->
     <div class="space-y-4">
         <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-zinc-700 cursor-pointer">
-            <img src="https://pics.craiyon.com/2023-07-09/2397d134ccee4679bfa3de7f100a62f4.webp" alt="Contact"
-                class="rounded-full w-12 h-12">
+            <ng-container *ngIf="!chat.isGroupChat; else groupImage">
+                <img src="https://pics.craiyon.com/2023-07-09/2397d134ccee4679bfa3de7f100a62f4.webp" alt="Contact"
+                    class="rounded-full w-12 h-12">
+            </ng-container>
+            <ng-template #groupImage>
+                <img src="https://cdn6.aptoide.com/imgs/1/2/2/1221bc0bdd2354b42b293317ff2adbcf_icon.png" alt="Contact"
+                    class="rounded-full w-12 h-12">
+            </ng-template>
             <div class="flex-1 justify-between items-center">
                 <h3 class="font-medium text-white">{{getName}}</h3>
                 <span class="text-sm text-gray-500 flex items-center justify-start" *ngIf="chat.lastMessage?.length">
@@ -21,7 +27,8 @@
             </div>
             <div class="flex-col min-w-[60px]">
                 <span class="text-xs text-gray-400">{{chat.updatedAt | date: 'shortTime'}}</span>
-                <div class="w-5 h-4 bg-green-500 rounded-full text-zinc-900 flex items-center justify-center text-xs mt-1">
+                <div
+                    class="w-5 h-4 bg-green-500 rounded-full text-zinc-900 flex items-center justify-center text-xs mt-1">
                     1
                 </div>
             </div>

@@ -2,9 +2,9 @@
     <ng-container *ngIf="messages?.length; else noMessages">
         <div class="flex"
             *ngFor="let msg of messages"
-            [ngClass]="{'justify-end': msg.sender === msg.loggeduser, 'justify-start': msg.sender !== msg.loggeduser}">
+            [ngClass]="{'justify-end': msg.sender._id === msg.loggeduser, 'justify-start': msg.sender._id !== msg.loggeduser}">
             <div class="rounded-lg px-4 py-2 max-w-[70%] text-white"
-                [ngClass]="{'bg-green-700': msg.sender === msg.loggeduser, 'bg-zinc-700': msg.sender !== msg.loggeduser}">
+                [ngClass]="{'bg-green-700': msg.sender._id === msg.loggeduser, 'bg-zinc-700': msg.sender._id !== msg.loggeduser}">
                 <p class="text-sm">{{ msg.content }}</p>
                 <span class="text-xs text-gray-400 mt-1">{{ msg.createdAt | date:'shortTime' }}</span>
             </div>

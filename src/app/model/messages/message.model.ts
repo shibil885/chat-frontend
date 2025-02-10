@@ -1,15 +1,18 @@
+import { IUser } from '../user/user.model';
+
 export interface IChatMessage {
   _id: string;
-  sender: string;
+  sender: IUser;
   content: string;
-  attachments: Attachment[];
+  attachments: Attachment;
   chat: string;
-  loggeduser?: string
+  loggeduser?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Attachment {
+  fileName: string;
   url: string;
-  localPath: string;
+  fileType: string;
 }

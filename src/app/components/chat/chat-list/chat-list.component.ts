@@ -14,15 +14,23 @@ export class ChatListComponent {
   @Output() selectChatEvent = new EventEmitter();
 
   get getName() {
-    return this.chat.participants.filter(
-      (user) => user._id !== this.chat.loggeduser
-    )[0].username;
+    if (this.chat.isGroupChat) {
+      return this.chat.name;
+    } else {
+      return this.chat.participants.filter(
+        (user) => user._id !== this.chat.loggeduser
+      )[0].username;
+    }
   }
 
   onSelectChat() {
-    const receiverId = this.chat.participants.filter(
-      (user) => user._id !== this.chat.loggeduser
-    )[0]._id;    
-    this.selectChatEvent.emit(receiverId);
+    if (this.chat.isGroupChat) {
+      this.selectChatEvent.emit({ type: 'group', id: this.chat._id });
+    } else {
+      const receiverId = this.chat.participants.filter(
+        (user) => user._id !== this.chat.loggeduser
+      )[0]._id;
+      this.selectChatEvent.emit({ type: '', id: receiverId });
+    }
   }
 }
