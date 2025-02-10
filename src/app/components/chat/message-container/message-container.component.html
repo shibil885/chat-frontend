@@ -1,4 +1,4 @@
-<div class="space-y-4">
+<!-- <div class="space-y-4">
     <ng-container *ngIf="messages?.length; else noMessages">
         <div class="flex"
             *ngFor="let msg of messages"
@@ -11,4 +11,40 @@
         </div>
     </ng-container>
     <ng-template #noMessages></ng-template>
+</div> -->
+
+<div class="space-y-4">
+    <ng-container *ngIf="messages?.length; else noMessages">
+        <div class="flex" *ngFor="let msg of messages"
+            [ngClass]="{'justify-end': msg.sender._id === msg.loggeduser, 'justify-start': msg.sender._id !== msg.loggeduser}">
+
+            <div class="rounded-lg px-1 py-1 max-w-[70%] text-white"
+                [ngClass]="{'bg-green-900': msg.sender._id === msg.loggeduser, 'bg-zinc-700': msg.sender._id !== msg.loggeduser}">
+
+                <p *ngIf="msg.content" class="text-[14px]">{{ msg.content }}</p>
+
+                <div *ngIf="msg.attachments?.fileType =='image'">
+                    <img [src]="msg.attachments.url" [alt]="msg.attachments.fileName"
+                        class="w-full max-h-60 rounded-md mt-2 p-0">
+                </div>
+
+                <!-- Show Document Attachments -->
+                <div *ngIf="msg.attachments?.fileType == 'document'">
+                    <a [href]="msg.attachments.url" download="{{ msg.attachments.fileName }}"
+                        class="flex items-center space-x-2 mt-2 bg-gray-800 text-white px-3 py-2 rounded-md hover:bg-gray-700 transition">
+                        <span>📄 {{ msg.attachments.fileName }}</span>
+                        <button class="bg-blue-500 text-white px-2 py-1 rounded">Download</button>
+                    </a>
+                </div>
+
+                <!-- Timestamp -->
+                <span class="text-xs text-gray-400 mt-1 block">{{ msg.createdAt | date:'shortTime' }}</span>
+
+            </div>
+        </div>
+    </ng-container>
+
+    <ng-template #noMessages>
+        <p class="text-center text-gray-500">No messages yet</p>
+    </ng-template>
 </div>

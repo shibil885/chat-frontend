@@ -5,7 +5,7 @@ export interface IChat {
   _id: string;
   name: string;
   isGroupChat: boolean;
-  lastMessage?: IChatMessage[];
+  lastMessage: IChatMessage[];
   participants: IUser[];
   admin?: string;
   loggeduser?: string;

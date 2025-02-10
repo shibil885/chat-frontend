@@ -12,17 +12,34 @@
             </ng-template>
             <div class="flex-1 justify-between items-center">
                 <h3 class="font-medium text-white">{{getName}}</h3>
+
                 <span class="text-sm text-gray-500 flex items-center justify-start" *ngIf="chat.lastMessage?.length">
+                    <!-- Checkmarks (✓✓) -->
                     <span class="flex justify-start text-zinc-500 font-semibold me-1">
-                        <p>
-                            ✓
-                        </p>
-                        <p class="-ml-2">
-                            ✓
-                        </p>
+                        <p>✓</p>
+                        <p class="-ml-2">✓</p>
                     </span>
-                    {{chat.lastMessage?.[0]?.content ?? ''}}
+
+                    <!-- Safe check for lastMessage -->
+                    <ng-container *ngIf="chat?.lastMessage?.[0]?.attachments as attachment">
+                        <!-- Image Message -->
+                        <p *ngIf="attachment.fileType =='image'">
+                            <i class="fa-regular fa-image"></i> Image
+                        </p>
+
+                        <!-- Document Message -->
+                        <p *ngIf="attachment.fileType == 'document'" class="text-ellipsis">
+                            <i class="fa-regular fa-file"></i> {{ attachment.fileName }}
+                        </p>
+
+                        <p *ngIf="attachment.fileType !== 'document' && attachment.fileType !== 'image'"
+                            class="text-ellipsis">
+                            {{chat.lastMessage[0].content}}
+                        </p>
+                    </ng-container>
+
                 </span>
+
                 <!-- <span class="text-sm text-gray-500">Typing...</span> -->
             </div>
             <div class="flex-col min-w-[60px]">
