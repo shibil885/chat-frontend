@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NewChatListComponent } from './new-chat-list/new-chat-list.component';
 import { SearchComponent } from './search/search.component';
@@ -11,6 +11,8 @@ import { MessageContainerComponent } from './message-container/message-container
 import { IChatMessage } from '../../model/messages/message.model';
 import { IUser } from '../../model/user/user.model';
 import { FileUploaderComponent } from './file-uploader/file-uploader.component';
+import { SocketService } from '../../shared/services/socket/socket.service';
+import { ChatEventEnum } from '../../enum/socketEvent.enum';
 
 @Component({
   selector: 'app-chat',
@@ -50,11 +52,21 @@ export class ChatComponent {
   content: string = '';
   constructor(
     private _chatService: ChatService,
-    private _messageService: MessageService
+    private _messageService: MessageService,
+    private _socketService: SocketService,
+    private _zone: NgZone
   ) {}
 
   ngOnInit() {
     this.fetchChats();
+    this._socketService
+      .listenEvent(ChatEventEnum.MESSAGE_RECEIVED_EVENT)
+      .subscribe((res) => {
+        this._zone.run(() => {
+          this._fetchAllMessages(res.chat);
+          this.fetchChats();
+        });
+      });
   }
 
   addChat() {
