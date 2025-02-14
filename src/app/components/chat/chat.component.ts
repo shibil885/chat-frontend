@@ -36,6 +36,11 @@ export class ChatComponent {
   selectedAttachmentType: string = '';
   selectedFile: File | null = null;
   error: string = '';
+  typingTimeout: any;
+  isTyping = false;
+  isRecieverTyping: boolean = false;
+  nonParticipants: IUser[] = [];
+  selectedParticipants: string[] = [];
   allowedImageTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
   allowedDocTypes = [
     'application/pdf',
@@ -50,6 +55,8 @@ export class ChatComponent {
   chats: IChat[] = [];
   messages: IChatMessage[] = [];
   content: string = '';
+  isMenuOpen = false;
+
   constructor(
     private _chatService: ChatService,
     private _messageService: MessageService,
@@ -59,12 +66,37 @@ export class ChatComponent {
 
   ngOnInit() {
     this.fetchChats();
+
     this._socketService
       .listenEvent(ChatEventEnum.MESSAGE_RECEIVED_EVENT)
       .subscribe((res) => {
         this._zone.run(() => {
           this._fetchAllMessages(res.chat);
           this.fetchChats();
+        });
+      });
+
+    this._socketService
+      .listenEvent(ChatEventEnum.NEW_GROUP_CREATED)
+      .subscribe((res) => {
+        this._zone.run(() => {
+          this.fetchChats();
+        });
+      });
+
+    this._socketService
+      .listenEvent(ChatEventEnum.TYPING_EVENT)
+      .subscribe((data) => {
+        this._zone.run(() => {
+          this.isRecieverTyping = !this.isRecieverTyping;
+        });
+      });
+
+    this._socketService
+      .listenEvent(ChatEventEnum.STOP_TYPING_EVENT)
+      .subscribe((data) => {
+        this._zone.run(() => {
+          this.isRecieverTyping = !this.isRecieverTyping;
         });
       });
   }
@@ -76,6 +108,9 @@ export class ChatComponent {
   private fetchChats() {
     this._chatService.getAllChats().subscribe((res) => {
       this.chats = res.data?.length ? res.data : [];
+      this.chats.forEach((chat) => {
+        this._socketService.emitEvent(ChatEventEnum.JOIN_CHAT_EVENT, chat._id);
+      });
     });
   }
 
@@ -206,5 +241,78 @@ export class ChatComponent {
   handleFileUpload(file: File) {
     this.selectedFile = file;
     this.addMessage();
+  }
+
+  onTyping() {
+    if (!this.isTyping) {
+      this.isTyping = true;
+      this._socketService.emitEvent(
+        ChatEventEnum.TYPING_EVENT,
+        this.selectedChat._id
+      );
+      console.log('typing started', this.isTyping);
+    }
+
+    clearTimeout(this.typingTimeout);
+
+    this.typingTimeout = setTimeout(() => {
+      this.isTyping = false;
+      this._socketService.emitEvent(
+        ChatEventEnum.STOP_TYPING_EVENT,
+        this.selectedChat._id
+      );
+    }, 2000);
+  }
+
+  onReadAllMessages() {
+    console.log(this.selectedChat);
+    confirm('ggg');
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  addUserToChat() {
+    this._chatService
+      .getNonParticipants(this.selectedChat._id)
+      .subscribe((res) => {
+        if (res.data) this.nonParticipants = res.data;
+        this.isMenuOpen = false;
+      });
+  }
+
+  addUser(user: string) {
+    this.selectedParticipants.push(user);
+  }
+
+  leaveChat() {
+    if (this.selectedChat.loggeduser)
+      this._chatService
+        .leaveChat(this.selectedChat._id, this.selectedChat.loggeduser)
+        .subscribe((res) => {
+          if (res.data) this.fetchChats();
+          console.log('leave chat res', res.data);
+        });
+    this.isMenuOpen = false;
+  }
+
+  confirmAddUsers() {
+    console.log(this.selectedParticipants);
+
+    this._chatService
+      .addUsersToChat(this.selectedChat._id, this.selectedParticipants)
+      .subscribe((res) => {
+        if (res.data) this.isMenuOpen = false;
+        this.selectedParticipants = [];
+        this.nonParticipants = [];
+        this.isMenuOpen = false;
+      });
+  }
+
+  cancelAddUsers() {
+    this.selectedParticipants = [];
+    this.nonParticipants = [];
+    this.isMenuOpen = false;
   }
 }

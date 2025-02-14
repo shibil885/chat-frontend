@@ -7,8 +7,7 @@ import { IApiResponse } from '../../../interfaces/response.interface';
   providedIn: 'root',
 })
 export class UserService {
-  // private readonly _baseUrl = import.meta.env.NG_APP_BASE_URL;
-  private readonly _baseUrl = 'http://localhost:4000';
+  private readonly _baseUrl = import.meta.env.NG_APP_BASE_URL;
   constructor(private _http: HttpClient) {}
 
   userLogin<T>(userData: {

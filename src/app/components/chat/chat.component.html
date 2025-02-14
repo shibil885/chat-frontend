@@ -8,9 +8,9 @@
                 <div class="flex items-center space-x-3">
                     <h1 class="font-bold text-2xl text-white">Chats </h1>
                 </div>
-                <div class="flex space-x-2">
+                <!-- <div class="flex space-x-2">
                     <ng-container *ngIf="!showNewChatList;else clearNewChatTemplate">
-                        <button class="bg-zinc-600 px-3 py-2 rounded-full text-white hover:cursor-pointer"
+                        <button class="bg-zinc-600 px-2 py-2 rounded-full text-white hover:cursor-pointer"
                             (click)="addChat()">
                             <i class="fas fa-add px-1"></i>
                         </button>
@@ -21,7 +21,24 @@
                             <i class="fas fa-multiply px-1"></i>
                         </button>
                     </ng-template>
+                </div> -->
+                <div class="flex space-x-2">
+                    <ng-container *ngIf="!showNewChatList; else clearNewChatTemplate">
+                        <button
+                            class="bg-zinc-600 px-2 py-2 rounded-full text-white hover:cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-110"
+                            (click)="addChat()">
+                            <i class="fas fa-add px-1"></i>
+                        </button>
+                    </ng-container>
+                    <ng-template #clearNewChatTemplate>
+                        <button
+                            class="bg-red-600 px-3 py-2 rounded-full text-white hover:cursor-pointer transition-transform duration-300 ease-in-out transform hover:rotate-90"
+                            (click)="addChat()">
+                            <i class="fas fa-multiply px-1"></i>
+                        </button>
+                    </ng-template>
                 </div>
+
             </div>
 
             <div *ngIf="!showNewChatList">
@@ -56,6 +73,7 @@
                     <button class="md:hidden">
                         <i class="fas fa-arrow-left text-gray-500"></i>
                     </button>
+
                     <div class="flex items-center space-x-3">
                         <ng-container *ngIf="!selectedChat.isGroupChat; else GroupChat">
                             <img src="https://pics.craiyon.com/2023-07-09/2397d134ccee4679bfa3de7f100a62f4.webp"
@@ -66,15 +84,87 @@
                                 alt="Contact" class="rounded-full w-10 h-10">
                         </ng-template>
                         <div>
-                            <h3 class="font-medium text-white">{{getName}}</h3>
-                            <span class="text-sm text-gray-500">Online</span>
+                            <h3 class="font-medium text-white">{{ getName }}</h3>
+                            <span class="text-sm text-green-500" *ngIf="isRecieverTyping">Typing...</span>
                         </div>
+                    </div>
+
+                    <!-- Ellipsis Icon & Dropdown Menu -->
+                    <div class="relative" *ngIf="selectedChat.isGroupChat">
+                        <i class="fa-solid fa-ellipsis-vertical text-white hover:cursor-pointer"
+                            (click)="toggleMenu()"></i>
+
+                        <!-- <div *ngIf="isMenuOpen" class="absolute right-0 mt-2 w-40 bg-zinc-700 shadow-md rounded-md">
+                            <ul class="py-2 text-zinc-200 ">
+                                <li *ngIf="selectedChat.admin === selectedChat.loggeduser" (click)="addUserToChat()"
+                                    class="px-4 py-2 hover:bg-zinc-600 cursor-pointer">
+                                    ➕ Add User
+                                </li>
+                                <li (click)="leaveChat()"
+                                    class="px-4 py-2 hover:bg-zinc-600 cursor-pointer text-red-500"
+                                    *ngIf="selectedChat.admin !== selectedChat.loggeduser">
+                                    🚪 Leave Chat
+                                </li>
+                            </ul>
+                            <div *ngIf="nonParticipants.length > 0"
+                                class="absolute right-0 mt-2 w-48 bg-zinc-600 shadow-md rounded-md p-2">
+                                <h4 class="text-sm font-semibold px-2 text-white">Add User</h4>
+                                <ul>
+                                    <li *ngFor="let user of nonParticipants" (click)="addUser(user._id)"
+                                        class="px-4 py-2 hover:bg-zinc-500 cursor-pointer text-white">
+                                        {{ user.username }}
+                                    </li>
+                                </ul>
+                                <div>
+                                    <button>confirm</button>
+                                    <button>cancel</button>
+                                </div>
+                            </div>
+                        </div> -->
+                        <div *ngIf="isMenuOpen"
+                            class="absolute right-0 mt-2 w-40 bg-zinc-800 shadow-lg rounded-md animate-fadeIn">
+                            <ul class="py-2 text-zinc-200">
+                                <li *ngIf="selectedChat.admin === selectedChat.loggeduser" (click)="addUserToChat()"
+                                    class="px-4 py-2 flex items-center gap-2 hover:bg-zinc-700 cursor-pointer transition">
+                                    ➕ <span>Add User</span>
+                                </li>
+                                <li (click)="leaveChat()"
+                                    class="px-4 py-2 flex items-center gap-2 hover:bg-zinc-700 cursor-pointer text-red-500 transition">
+                                    🚪 <span>Leave Chat</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Add Users Dropdown -->
+                        <div *ngIf="nonParticipants.length > 0"
+                            class="absolute right-0 mt-2 w-48 bg-zinc-700 shadow-lg rounded-md p-3 animate-slideIn">
+                            <h4 class="text-sm font-semibold px-2 text-white border-b border-zinc-500 pb-2">Select Users
+                            </h4>
+                            <ul class="mt-2">
+                                <li *ngFor="let user of nonParticipants" (click)="addUser(user._id)"
+                                    class="px-4 py-2 flex justify-between items-center hover:bg-zinc-600 cursor-pointer text-white rounded-md transition">
+                                    {{ user.username }}
+                                    <span *ngIf="selectedParticipants.includes(user._id)">✔️</span>
+                                </li>
+                            </ul>
+                            <div class="flex justify-end gap-2 mt-3">
+                                <button (click)="confirmAddUsers()"
+                                    class="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-500 transition"
+                                    [disabled]="!selectedParticipants.length">Confirm</button>
+                                <button (click)="cancelAddUsers()"
+                                    class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-400 transition">Cancel</button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
+
                 <!-- Chat Messages -->
                 <div class="flex-1 overflow-y-auto px-4 pt-4 pb-3">
-                    <app-message-container [messages]="messages"></app-message-container>
+                    <app-message-container [messages]="messages" [isGroupChat]="selectedChat.isGroupChat"
+                        (allMessageReadEvent)="onReadAllMessages()">
+                    </app-message-container>
                 </div>
 
                 <!-- Message Input -->
@@ -103,9 +193,11 @@
 
                         <!-- Input Field -->
                         <input type="text" placeholder="Type a message..."
-                            class="flex-1 bg-zinc-800 focus:outline-none text-white" [(ngModel)]="content">
+                            class="flex-1 bg-zinc-800 focus:outline-none text-white" [(ngModel)]="content"
+                            (input)="onTyping()">
                         <input type="file" class="hidden" #fileInput (change)="onFileChange($event)">
-                        <button (click)="addMessage()"><i class="fas fa-share text-white"></i></button>
+                        <button (click)="addMessage()" [disabled]="content.trim() == ''"><i
+                                class="fas fa-share text-white"></i></button>
                     </div>
                 </div>
 
@@ -113,7 +205,8 @@
                 <app-file-uploader *ngIf="selectedFile" [selectedFile]="selectedFile"
                     (fileSelectedEvent)="handleFileUpload($event)" (cancelFileUploadEvent)="onCancelFileUpload()"
                     (reTryFileSelectionEvent)="onReTryToSelectFile($event)" [attachmentType]="selectedAttachmentType"
-                    [error]="error"></app-file-uploader>
+                    [error]="error">
+                </app-file-uploader>
 
 
             </div>
@@ -132,7 +225,5 @@
                 </div>
             </div>
         </ng-template>
-
-
     </div>
 </main>

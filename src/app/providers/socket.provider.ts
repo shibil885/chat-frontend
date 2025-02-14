@@ -1,7 +1,7 @@
 import { Socket, SocketIoConfig } from 'ngx-socket-io';
 
 const socketConfig: SocketIoConfig = {
-  url: 'http://localhost:4000',
+  url: import.meta.env.NG_APP_BASE_URL,
   options: { withCredentials: true },
 };
 

@@ -7,8 +7,7 @@ import { IChatMessage } from '../../../model/messages/message.model';
   providedIn: 'root',
 })
 export class MessageService {
-  // private readonly _BASE_URL = import.meta.env.NG_APP_BASE_URL;
-  private readonly _BASE_URL = 'http://localhost:4000';
+  private readonly _BASE_URL = import.meta.env.NG_APP_BASE_URL;
   private readonly _api = `${this._BASE_URL}/message`;
   constructor(private _http: HttpClient) {}
 

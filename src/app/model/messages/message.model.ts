@@ -6,6 +6,7 @@ export interface IChatMessage {
   content: string;
   attachments: Attachment;
   chat: string;
+  isRead: boolean
   loggeduser?: string;
   createdAt: string;
   updatedAt: string;
