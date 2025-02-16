@@ -1,7 +1,7 @@
 <div class="sticky top-[60px] z-40 bg-zinc-800 p-4">
     <div class="relative">
         <i class="fas fa-search absolute left-3 top-3 text-gray-100"></i>
-        <input type="text" placeholder="Search..."
+        <input type="text" placeholder="Search..." [(ngModel)]="searchQuery" (input)="onSearch()"
             class="w-full pl-10 pr-4 py-2 border-b-4 text-white border-zinc-400 rounded-lg bg-zinc-600 focus:outline-none focus:border-green-800 focus:bg-zinc-700">
     </div>
 </div>

@@ -57,6 +57,7 @@ export class ChatComponent {
   messages: IChatMessage[] = [];
   content: string = '';
   isMenuOpen = false;
+  isSidebarOpen = false; // Sidebar state
 
   constructor(
     private _chatService: ChatService,
@@ -114,11 +115,15 @@ export class ChatComponent {
       });
   }
 
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
   addChat() {
     this.showNewChatList = !this.showNewChatList;
   }
 
-  private fetchChats() {
+   fetchChats() {
     this._chatService.getAllChats().subscribe((res) => {
       this.chats = res.data?.length ? res.data : [];
       this.chats.forEach((chat) => {
