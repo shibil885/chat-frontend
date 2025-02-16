@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { IApiResponse } from '../../../interfaces/response.interface';
 
 @Injectable({
@@ -14,11 +14,19 @@ export class UserService {
     email: string;
     password: string;
   }): Observable<IApiResponse<T>> {
-    return this._http.post<IApiResponse<T>>(
-      `${this._baseUrl}/auth/login`,
-      userData,
-      { withCredentials: true }
-    );
+    return this._http
+      .post<IApiResponse<T>>(`${this._baseUrl}/auth/login`, userData, {
+        withCredentials: true,
+      })
+      .pipe(
+        tap((res) => {
+          if (res.meta)
+            localStorage.setItem(
+              'access_Token',
+              res.meta['access_token'].toString()
+            );
+        })
+      );
   }
 
   userSignup<T>(userData: {
@@ -34,10 +42,18 @@ export class UserService {
   }
 
   otpSubmit<T>(otpData: { email: string; otp: number }) {
-    return this._http.patch<IApiResponse<T>>(
-      `${this._baseUrl}/otp/submit`,
-      otpData,
-      { withCredentials: true }
-    );
+    return this._http
+      .patch<IApiResponse<T>>(`${this._baseUrl}/otp/submit`, otpData, {
+        withCredentials: true,
+      })
+      .pipe(
+        tap((res) => {
+          if (res.meta)
+            localStorage.setItem(
+              'access_Token',
+              res.meta['access_token'].toString()
+            );
+        })
+      );
   }
 }
