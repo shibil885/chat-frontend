@@ -52,7 +52,7 @@
         </div>
 
         <!-- Right Chat View -->
-        <ng-container *ngIf="selectedChat; else noSelectedChat">
+        <ng-container *ngIf="selectedChat && isSelectedChatValid; else noSelectedChat">
             <div class="flex-1 flex flex-col bg-zinc-800">
                 <!-- Chat Header -->
                 <div class="sticky top-0 z-30 bg-zinc-800 p-4 border-b border-black flex items-center justify-between">
@@ -80,34 +80,6 @@
                     <div class="relative" *ngIf="selectedChat.isGroupChat">
                         <i class="fa-solid fa-ellipsis-vertical text-white hover:cursor-pointer"
                             (click)="toggleMenu()"></i>
-
-                        <!-- <div *ngIf="isMenuOpen" class="absolute right-0 mt-2 w-40 bg-zinc-700 shadow-md rounded-md">
-                            <ul class="py-2 text-zinc-200 ">
-                                <li *ngIf="selectedChat.admin === selectedChat.loggeduser" (click)="addUserToChat()"
-                                    class="px-4 py-2 hover:bg-zinc-600 cursor-pointer">
-                                    ➕ Add User
-                                </li>
-                                <li (click)="leaveChat()"
-                                    class="px-4 py-2 hover:bg-zinc-600 cursor-pointer text-red-500"
-                                    *ngIf="selectedChat.admin !== selectedChat.loggeduser">
-                                    🚪 Leave Chat
-                                </li>
-                            </ul>
-                            <div *ngIf="nonParticipants.length > 0"
-                                class="absolute right-0 mt-2 w-48 bg-zinc-600 shadow-md rounded-md p-2">
-                                <h4 class="text-sm font-semibold px-2 text-white">Add User</h4>
-                                <ul>
-                                    <li *ngFor="let user of nonParticipants" (click)="addUser(user._id)"
-                                        class="px-4 py-2 hover:bg-zinc-500 cursor-pointer text-white">
-                                        {{ user.username }}
-                                    </li>
-                                </ul>
-                                <div>
-                                    <button>confirm</button>
-                                    <button>cancel</button>
-                                </div>
-                            </div>
-                        </div> -->
                         <div *ngIf="isMenuOpen"
                             class="absolute right-0 mt-2 w-40 bg-zinc-800 shadow-lg rounded-md animate-fadeIn">
                             <ul class="py-2 text-zinc-200">

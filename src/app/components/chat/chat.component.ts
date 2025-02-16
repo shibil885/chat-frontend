@@ -13,6 +13,7 @@ import { IUser } from '../../model/user/user.model';
 import { FileUploaderComponent } from './file-uploader/file-uploader.component';
 import { SocketService } from '../../shared/services/socket/socket.service';
 import { ChatEventEnum } from '../../enum/socketEvent.enum';
+import { EMPTY_CHAT } from '../../constants/emptyChat.constant';
 
 @Component({
   selector: 'app-chat',
@@ -176,6 +177,10 @@ export class ChatComponent {
     )[0].avatar;
   }
 
+  get isSelectedChatValid(): boolean {
+    return !!(this.selectedChat && this.selectedChat._id);
+  }
+
   onCreateNewGroup(groupData: { users: IUser[]; groupName: string }) {
     this.showNewChatList = !this.showNewChatList;
     this._chatService
@@ -314,7 +319,8 @@ export class ChatComponent {
       this._chatService
         .leaveChat(this.selectedChat._id, this.selectedChat.loggeduser)
         .subscribe((res) => {
-          if (res.data) this.fetchChats();
+          if (res.data)
+            this.fetchChats(), (this.selectedChat = { ...EMPTY_CHAT });
         });
     this.isMenuOpen = false;
   }
