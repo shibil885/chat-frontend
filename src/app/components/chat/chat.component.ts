@@ -57,7 +57,7 @@ export class ChatComponent {
   messages: IChatMessage[] = [];
   content: string = '';
   isMenuOpen = false;
-  isSidebarOpen = false; // Sidebar state
+  isChatOpen: boolean = false;
 
   constructor(
     private _chatService: ChatService,
@@ -115,15 +115,16 @@ export class ChatComponent {
       });
   }
 
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
+  onChatCloseInSmallDevice() {
+    this.isChatOpen = false;
+    this.selectedChat = { ...EMPTY_CHAT };
   }
 
   addChat() {
     this.showNewChatList = !this.showNewChatList;
   }
 
-   fetchChats() {
+  fetchChats() {
     this._chatService.getAllChats().subscribe((res) => {
       this.chats = res.data?.length ? res.data : [];
       this.chats.forEach((chat) => {
@@ -201,6 +202,7 @@ export class ChatComponent {
   }
 
   onSelectChat(data: { type: string; id: string }) {
+    this.isChatOpen = true;
     if (data.type !== 'group') {
       this.createOrGetAOneOnOneChat(data.id);
     } else {
