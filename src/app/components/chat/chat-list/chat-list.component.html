@@ -14,8 +14,9 @@
                 <h3 class="font-medium text-white">{{getName}}</h3>
 
                 <span class="text-sm text-gray-500 flex items-center justify-start" *ngIf="chat.lastMessage?.length">
-                    <span class="flex justify-star font-semibold me-1"
-                        [ngStyle]="{'text-zinc-700': !chat.lastMessage[0].isRead,'text-blue-500': chat.lastMessage[0].isRead }">
+                    <span *ngIf="chat.lastMessage[0]?.sender?._id === chat.loggeduser"
+                        class="flex justify-start font-semibold me-1"
+                        [ngClass]="{'text-zinc-700': !chat.lastMessage[0].isRead, 'text-blue-500': chat.lastMessage[0].isRead}">
                         <p>✓</p>
                         <p class="-ml-2">✓</p>
                     </span>
@@ -40,10 +41,10 @@
                 <!-- <span class="text-sm text-gray-500">Typing...</span> -->
             </div>
             <div class="flex-col min-w-[60px]">
-                <span class="text-xs text-gray-400">{{chat.updatedAt | date: 'shortTime'}}</span>
-                <div
+                <span class="text-xs text-gray-400">{{ chat.updatedAt | date: 'shortTime' }}</span>
+                <div *ngIf="chat.unreadMessages && chat.unreadMessages.length > 0"
                     class="w-5 h-4 bg-green-500 rounded-full text-zinc-900 flex items-center justify-center text-xs mt-1">
-                    1
+                    {{ chat.unreadMessages.length }}
                 </div>
             </div>
         </div>

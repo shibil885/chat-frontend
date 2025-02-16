@@ -71,6 +71,18 @@ export class ChatComponent {
       .listenEvent(ChatEventEnum.MESSAGE_RECEIVED_EVENT)
       .subscribe((res) => {
         this._zone.run(() => {
+          if (this.selectedChat) {
+            this.onReadAllMessages();
+          }
+          this._fetchAllMessages(res.chat);
+          this.fetchChats();
+        });
+      });
+
+    this._socketService
+      .listenEvent(ChatEventEnum.READ_ALL_MESSAGES)
+      .subscribe((res) => {
+        this._zone.run(() => {
           this._fetchAllMessages(res.chat);
           this.fetchChats();
         });
@@ -115,11 +127,13 @@ export class ChatComponent {
   }
 
   private _fetchAllMessages(chatId?: string) {
-    this._messageService.fetchAllMessages(chatId).subscribe((res) => {
-      if (res.data) {
-        this.messages = res.data;
-      }
-    });
+    this._messageService
+      .fetchAllMessages(chatId ? chatId : this.selectedChat._id)
+      .subscribe((res) => {
+        if (res.data) {
+          this.messages = res.data;
+        }
+      });
   }
 
   createOrGetAOneOnOneChat(userId: string) {
@@ -256,7 +270,6 @@ export class ChatComponent {
         ChatEventEnum.TYPING_EVENT,
         this.selectedChat._id
       );
-      console.log('typing started', this.isTyping);
     }
 
     clearTimeout(this.typingTimeout);
@@ -271,8 +284,12 @@ export class ChatComponent {
   }
 
   onReadAllMessages() {
-    console.log(this.selectedChat);
-    confirm('ggg');
+    this._messageService
+      .readAllMessages(this.selectedChat._id)
+      .subscribe(() => {
+        this.fetchChats();
+        this._fetchAllMessages(this.selectedChat._id);
+      });
   }
 
   toggleMenu() {
@@ -298,14 +315,11 @@ export class ChatComponent {
         .leaveChat(this.selectedChat._id, this.selectedChat.loggeduser)
         .subscribe((res) => {
           if (res.data) this.fetchChats();
-          console.log('leave chat res', res.data);
         });
     this.isMenuOpen = false;
   }
 
   confirmAddUsers() {
-    console.log(this.selectedParticipants);
-
     this._chatService
       .addUsersToChat(this.selectedChat._id, this.selectedParticipants)
       .subscribe((res) => {

@@ -11,6 +11,7 @@ export interface IChat {
   loggeduser?: string;
   sender?: string;
   messages: IChatMessage[];
+  unreadMessages?: string[];
   createdAt: string;
   updatedAt: string;
 }

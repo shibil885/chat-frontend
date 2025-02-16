@@ -40,4 +40,12 @@ export class MessageService {
       }
     );
   }
+  
+  readAllMessages(chatId: string) {
+    return this._http.patch(
+      `${this._api}/readallmessages/${chatId}`,
+      {},
+      { withCredentials: true }
+    );
+  }
 }

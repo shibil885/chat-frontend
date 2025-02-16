@@ -1,4 +1,6 @@
-<div class="space-y-1 p-2">
+<div #messageContainer class="space-y-2 p-2 overflow-y-auto h-[500px] bg-zinc-800"
+    (scroll)="onScroll($event)">
+
     <ng-container *ngIf="messages?.length; else noMessages">
         <div class="flex" *ngFor="let msg of messages"
             [ngClass]="{'justify-end': msg.sender._id === msg.loggeduser, 'justify-start': msg.sender._id !== msg.loggeduser}">
@@ -15,11 +17,13 @@
                     {{ msg.content }}
                 </p>
 
+                <!-- Image Attachments -->
                 <div *ngIf="msg.attachments?.fileType === 'image'" class="mt-1">
                     <img [src]="msg.attachments.url" [alt]="msg.attachments.fileName"
                         class="rounded-lg max-w-[250px] max-h-[300px] shadow">
                 </div>
 
+                <!-- Document Attachments -->
                 <div *ngIf="msg.attachments?.fileType === 'document'"
                     class="mt-1 flex items-center bg-[#2A3942] p-2 rounded-lg">
                     <span class="text-sm text-gray-300 flex-1 truncate">📄 {{ msg.attachments.fileName }}</span>
@@ -30,15 +34,13 @@
                 <div class="flex items-center justify-end mt-1">
                     <span class="text-xs text-gray-400 mr-1">{{ msg.createdAt | date:'shortTime' }}</span>
 
+                    <!-- Checkmark for Sent Messages -->
                     <span *ngIf="msg.sender._id === msg.loggeduser">
-
                         <span class="flex justify-start text-xs font-semibold me-1"
                             [ngClass]="{'text-zinc-400': !msg.isRead, 'text-blue-500': msg.isRead}">
                             <p>✓</p>
                             <p class="-ml-1">✓</p>
                         </span>
-                        
-
                     </span>
                 </div>
 

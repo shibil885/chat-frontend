@@ -27,9 +27,7 @@ export class ToastComponent {
   constructor(private _toastService: ToastService) {}
 
   ngOnInit() {
-    this._toastService.toastState.subscribe((toast: ToastMessage) => {
-      console.log(this.toastMessages);
-      
+    this._toastService.toastState.subscribe((toast: ToastMessage) => {  
       this.toastMessages.push(toast);
       setTimeout(() => this.removeToast(toast), 3000);
     });

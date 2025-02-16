@@ -23,4 +23,6 @@ export enum ChatEventEnum {
   MESSAGE_DELETE_EVENT = 'messageDeleted',
   // ? when new group is create
   NEW_GROUP_CREATED = 'newGroupCreated',
+  // ? when all message will read
+  READ_ALL_MESSAGES = 'readAllMessages'
 }
