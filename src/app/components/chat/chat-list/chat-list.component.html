@@ -3,7 +3,7 @@
     <div class="space-y-4">
         <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-zinc-700 cursor-pointer">
             <ng-container *ngIf="!chat.isGroupChat; else groupImage">
-                <img src="https://pics.craiyon.com/2023-07-09/2397d134ccee4679bfa3de7f100a62f4.webp" alt="Contact"
+                <img [src]="getAvatar" alt="https://pics.craiyon.com/2023-07-09/2397d134ccee4679bfa3de7f100a62f4.webp"
                     class="rounded-full w-12 h-12">
             </ng-container>
             <ng-template #groupImage>

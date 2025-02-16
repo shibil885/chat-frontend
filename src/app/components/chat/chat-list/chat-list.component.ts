@@ -23,6 +23,12 @@ export class ChatListComponent {
     }
   }
 
+  get getAvatar() {
+    return this.chat.participants.filter(
+      (user) => user._id !== this.chat.loggeduser
+    )[0].avatar;
+  }
+
   onSelectChat() {
     if (this.chat.isGroupChat) {
       this.selectChatEvent.emit({ type: 'group', id: this.chat._id });

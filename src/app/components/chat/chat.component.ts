@@ -156,6 +156,12 @@ export class ChatComponent {
     }
   }
 
+  get getAvatar() {
+    return this.selectedChat.participants.filter(
+      (user) => user._id !== this.selectedChat.loggeduser
+    )[0].avatar;
+  }
+
   onCreateNewGroup(groupData: { users: IUser[]; groupName: string }) {
     this.showNewChatList = !this.showNewChatList;
     this._chatService

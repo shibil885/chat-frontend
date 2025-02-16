@@ -8,20 +8,6 @@
                 <div class="flex items-center space-x-3">
                     <h1 class="font-bold text-2xl text-white">Chats </h1>
                 </div>
-                <!-- <div class="flex space-x-2">
-                    <ng-container *ngIf="!showNewChatList;else clearNewChatTemplate">
-                        <button class="bg-zinc-600 px-2 py-2 rounded-full text-white hover:cursor-pointer"
-                            (click)="addChat()">
-                            <i class="fas fa-add px-1"></i>
-                        </button>
-                    </ng-container>
-                    <ng-template #clearNewChatTemplate>
-                        <button class="bg-red-600 px-3 py-2 rounded-full text-white hover:cursor-pointer"
-                            (click)="addChat()">
-                            <i class="fas fa-multiply px-1"></i>
-                        </button>
-                    </ng-template>
-                </div> -->
                 <div class="flex space-x-2">
                     <ng-container *ngIf="!showNewChatList; else clearNewChatTemplate">
                         <button
@@ -76,8 +62,9 @@
 
                     <div class="flex items-center space-x-3">
                         <ng-container *ngIf="!selectedChat.isGroupChat; else GroupChat">
-                            <img src="https://pics.craiyon.com/2023-07-09/2397d134ccee4679bfa3de7f100a62f4.webp"
-                                alt="Contact" class="rounded-full w-10 h-10">
+                            <img [src]="getAvatar"
+                                alt="https://pics.craiyon.com/2023-07-09/2397d134ccee4679bfa3de7f100a62f4.webp"
+                                class="rounded-full w-10 h-10">
                         </ng-container>
                         <ng-template #GroupChat>
                             <img src="https://cdn6.aptoide.com/imgs/1/2/2/1221bc0bdd2354b42b293317ff2adbcf_icon.png"
