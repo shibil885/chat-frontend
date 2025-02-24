@@ -14,6 +14,7 @@ import { FileUploaderComponent } from './file-uploader/file-uploader.component';
 import { SocketService } from '../../shared/services/socket/socket.service';
 import { ChatEventEnum } from '../../enum/socketEvent.enum';
 import { EMPTY_CHAT } from '../../constants/emptyChat.constant';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
@@ -59,6 +60,7 @@ export class ChatComponent {
   isMenuOpen = false;
   isChatOpen: boolean = false;
 
+  private subscriptions: Subscription = new Subscription();
   constructor(
     private _chatService: ChatService,
     private _messageService: MessageService,
@@ -68,51 +70,70 @@ export class ChatComponent {
 
   ngOnInit() {
     this.fetchChats();
+    this.subscriptions.add(
+      this._socketService
+        .listenEvent(ChatEventEnum.MESSAGE_RECEIVED_EVENT)
+        .subscribe((res) => {
+          this._zone.run(() => {
+            if (this.selectedChat) {
+              this.onReadAllMessages();
+            }
+            this._fetchAllMessages(res.chat);
+            this.fetchChats();
+          });
+        })
+    );
 
-    this._socketService
-      .listenEvent(ChatEventEnum.MESSAGE_RECEIVED_EVENT)
-      .subscribe((res) => {
-        this._zone.run(() => {
-          if (this.selectedChat) {
-            this.onReadAllMessages();
-          }
-          this._fetchAllMessages(res.chat);
-          this.fetchChats();
-        });
-      });
+    this.subscriptions.add(
+      this._socketService
+        .listenEvent(ChatEventEnum.READ_ALL_MESSAGES)
+        .subscribe((res) => {
+          this._zone.run(() => {
+            this._fetchAllMessages(res.chat);
+            this.fetchChats();
+          });
+        })
+    );
 
-    this._socketService
-      .listenEvent(ChatEventEnum.READ_ALL_MESSAGES)
-      .subscribe((res) => {
-        this._zone.run(() => {
-          this._fetchAllMessages(res.chat);
-          this.fetchChats();
-        });
-      });
+    this.subscriptions.add(
+      this._socketService
+        .listenEvent(ChatEventEnum.NEW_GROUP_CREATED)
+        .subscribe((res) => {
+          this._zone.run(() => {
+            this.fetchChats();
+          });
+        })
+    );
 
-    this._socketService
-      .listenEvent(ChatEventEnum.NEW_GROUP_CREATED)
-      .subscribe((res) => {
-        this._zone.run(() => {
-          this.fetchChats();
-        });
-      });
+    this.subscriptions.add(
+      this._socketService
+        .listenEvent(ChatEventEnum.TYPING_EVENT)
+        .subscribe((data) => {
+          this._zone.run(() => {
+            this.isRecieverTyping = !this.isRecieverTyping;
+          });
+        })
+    );
 
-    this._socketService
-      .listenEvent(ChatEventEnum.TYPING_EVENT)
-      .subscribe((data) => {
-        this._zone.run(() => {
-          this.isRecieverTyping = !this.isRecieverTyping;
-        });
-      });
+    this.subscriptions.add(
+      this._socketService
+        .listenEvent(ChatEventEnum.STOP_TYPING_EVENT)
+        .subscribe((data) => {
+          this._zone.run(() => {
+            this.isRecieverTyping = !this.isRecieverTyping;
+          });
+        })
+    );
+  }
 
-    this._socketService
-      .listenEvent(ChatEventEnum.STOP_TYPING_EVENT)
-      .subscribe((data) => {
-        this._zone.run(() => {
-          this.isRecieverTyping = !this.isRecieverTyping;
-        });
-      });
+  ngOnDestroy(): void {
+    if (this.subscriptions) {
+      this.subscriptions.unsubscribe();
+    }
+
+    if (this.typingTimeout) {
+      clearTimeout(this.typingTimeout);
+    }
   }
 
   onChatCloseInSmallDevice() {
@@ -125,46 +146,57 @@ export class ChatComponent {
   }
 
   fetchChats() {
-    this._chatService.getAllChats().subscribe((res) => {
-      this.chats = res.data?.length ? res.data : [];
-      this.chats.forEach((chat) => {
-        this._socketService.emitEvent(ChatEventEnum.JOIN_CHAT_EVENT, chat._id);
-      });
-    });
+    this.subscriptions.add(
+      this._chatService.getAllChats().subscribe((res) => {
+        this.chats = res.data?.length ? res.data : [];
+        this.chats.forEach((chat) => {
+          this._socketService.emitEvent(
+            ChatEventEnum.JOIN_CHAT_EVENT,
+            chat._id
+          );
+        });
+      })
+    );
   }
 
   private _fetchAllMessages(chatId?: string) {
-    this._messageService
-      .fetchAllMessages(chatId ? chatId : this.selectedChat._id)
-      .subscribe((res) => {
-        if (res.data) {
-          this.messages = res.data;
-        }
-      });
+    this.subscriptions.add(
+      this._messageService
+        .fetchAllMessages(chatId ? chatId : this.selectedChat._id)
+        .subscribe((res) => {
+          if (res.data) {
+            this.messages = res.data;
+          }
+        })
+    );
   }
 
   createOrGetAOneOnOneChat(userId: string) {
     if (this.showNewChatList) this.showNewChatList = !this.showNewChatList;
-    this._chatService.creatOrGetAOneOnOneChat(userId).subscribe((res) => {
-      if (res.data) this.selectedChat = res.data;
-      this.fetchChats();
-      this._fetchAllMessages(res.data?._id);
-    });
+    this.subscriptions.add(
+      this._chatService.creatOrGetAOneOnOneChat(userId).subscribe((res) => {
+        if (res.data) this.selectedChat = res.data;
+        this.fetchChats();
+        this._fetchAllMessages(res.data?._id);
+      })
+    );
   }
 
   addMessage() {
-    this._messageService
-      .addMessage(
-        this.selectedChat._id,
-        this.content,
-        this.selectedFile,
-        this.selectedAttachmentType
-      )
-      .subscribe((res) => {
-        this.content = '';
-        this._fetchAllMessages(this.selectedChat._id);
-        this.fetchChats();
-      });
+    this.subscriptions.add(
+      this._messageService
+        .addMessage(
+          this.selectedChat._id,
+          this.content,
+          this.selectedFile,
+          this.selectedAttachmentType
+        )
+        .subscribe((res) => {
+          this.content = '';
+          this._fetchAllMessages(this.selectedChat._id);
+          this.fetchChats();
+        })
+    );
   }
 
   get getName() {
@@ -189,16 +221,19 @@ export class ChatComponent {
 
   onCreateNewGroup(groupData: { users: IUser[]; groupName: string }) {
     this.showNewChatList = !this.showNewChatList;
-    this._chatService
-      .createNewGroupChat({
-        users: groupData.users,
-        name: groupData.groupName,
-      })
-      .subscribe((res) => {
-        if (res) {
-          this.fetchChats();
-        }
-      });
+
+    this.subscriptions.add(
+      this._chatService
+        .createNewGroupChat({
+          users: groupData.users,
+          name: groupData.groupName,
+        })
+        .subscribe((res) => {
+          if (res) {
+            this.fetchChats();
+          }
+        })
+    );
   }
 
   onSelectChat(data: { type: string; id: string }) {
@@ -206,10 +241,12 @@ export class ChatComponent {
     if (data.type !== 'group') {
       this.createOrGetAOneOnOneChat(data.id);
     } else {
-      this._chatService.getAGroupChat(data.id).subscribe((res) => {
-        if (res.data) this.selectedChat = res.data;
-        this._fetchAllMessages(res.data?._id);
-      });
+      this.subscriptions.add(
+        this._chatService.getAGroupChat(data.id).subscribe((res) => {
+          if (res.data) this.selectedChat = res.data;
+          this._fetchAllMessages(res.data?._id);
+        })
+      );
     }
   }
   toggleAttachmentMenu() {
@@ -296,12 +333,14 @@ export class ChatComponent {
   }
 
   onReadAllMessages() {
-    this._messageService
-      .readAllMessages(this.selectedChat._id)
-      .subscribe(() => {
-        this.fetchChats();
-        this._fetchAllMessages(this.selectedChat._id);
-      });
+    this.subscriptions.add(
+      this._messageService
+        .readAllMessages(this.selectedChat._id)
+        .subscribe(() => {
+          this.fetchChats();
+          this._fetchAllMessages(this.selectedChat._id);
+        })
+    );
   }
 
   toggleMenu() {
@@ -309,12 +348,14 @@ export class ChatComponent {
   }
 
   addUserToChat() {
-    this._chatService
-      .getNonParticipants(this.selectedChat._id)
-      .subscribe((res) => {
-        if (res.data) this.nonParticipants = res.data;
-        this.isMenuOpen = false;
-      });
+    this.subscriptions.add(
+      this._chatService
+        .getNonParticipants(this.selectedChat._id)
+        .subscribe((res) => {
+          if (res.data) this.nonParticipants = res.data;
+          this.isMenuOpen = false;
+        })
+    );
   }
 
   addUser(user: string) {
@@ -323,24 +364,28 @@ export class ChatComponent {
 
   leaveChat() {
     if (this.selectedChat.loggeduser)
-      this._chatService
-        .leaveChat(this.selectedChat._id, this.selectedChat.loggeduser)
-        .subscribe((res) => {
-          if (res.data)
-            this.fetchChats(), (this.selectedChat = { ...EMPTY_CHAT });
-        });
+      this.subscriptions.add(
+        this._chatService
+          .leaveChat(this.selectedChat._id, this.selectedChat.loggeduser)
+          .subscribe((res) => {
+            if (res.data)
+              this.fetchChats(), (this.selectedChat = { ...EMPTY_CHAT });
+          })
+      );
     this.isMenuOpen = false;
   }
 
   confirmAddUsers() {
-    this._chatService
-      .addUsersToChat(this.selectedChat._id, this.selectedParticipants)
-      .subscribe((res) => {
-        if (res.data) this.isMenuOpen = false;
-        this.selectedParticipants = [];
-        this.nonParticipants = [];
-        this.isMenuOpen = false;
-      });
+    this.subscriptions.add(
+      this._chatService
+        .addUsersToChat(this.selectedChat._id, this.selectedParticipants)
+        .subscribe((res) => {
+          if (res.data) this.isMenuOpen = false;
+          this.selectedParticipants = [];
+          this.nonParticipants = [];
+          this.isMenuOpen = false;
+        })
+    );
   }
 
   cancelAddUsers() {

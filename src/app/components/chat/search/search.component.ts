@@ -23,10 +23,16 @@ export class SearchComponent {
       return;
     }
 
-    const filtered = this.chats.filter((chat) =>
-      chat.name.toLowerCase().includes(query)
-    );
-
+    const filtered = this.chats.filter((chat) => {
+      if (chat.isGroupChat) {
+        return chat.name.toLowerCase().includes(query.toLowerCase());
+      } else {
+        let receiver = chat.participants.find(
+          (user) => user._id !== chat.loggeduser
+        );
+        return receiver?.username.toLowerCase().includes(query.toLowerCase());
+      }
+    });
     this.filteredChats.emit(filtered);
   }
 }
