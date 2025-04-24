@@ -25,7 +25,6 @@ export class MessageContainerComponent {
   @Output() allMessageReadEvent = new EventEmitter();
 
   @ViewChild('messageContainer') messageContainer!: ElementRef;
-
   private isUserScrollingUp: boolean = false;
 
   ngOnInit(): void {

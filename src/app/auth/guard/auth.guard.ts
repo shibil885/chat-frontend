@@ -15,6 +15,7 @@ export const authGuardFn: CanActivateFn = (route) => {
 
   if (isLoginRoute) {
     if (authService.isLoggedIn()) {
+      console.log('gur succc invoked');
       router.navigate(['/home']);
       return false;
     }

@@ -8,16 +8,28 @@ import { Observable } from 'rxjs';
 export class SocketService {
   constructor(private _socket: Socket) {
     this._socket.on('connected', () => {
-      console.log('Connected to Socket.IO server');
+      console.log('✅ Connected to Socket.IO server');
     });
 
     this._socket.on('disconnect', () => {
-      console.log('Disconnected from Socket.IO server');
+      console.log('❌ Disconnected from Socket.IO server');
     });
 
     this._socket.on('error', (error: any) => {
-      console.error('Socket.IO error:', error);
+      console.error('⚠️ Socket.IO error:', error);
     });
+  }
+
+  connect(): void {
+    if (!this._socket.ioSocket.connected) {
+      this._socket.connect();
+    }
+  }
+
+  disconnect(): void {
+    if (this._socket.ioSocket.connected) {
+      this._socket.disconnect();
+    }
   }
 
   emitEvent(event: string, payload: any): void {

@@ -66,7 +66,10 @@ export class ChatComponent {
     private _messageService: MessageService,
     private _socketService: SocketService,
     private _zone: NgZone
-  ) {}
+  ) {
+    this._socketService.connect()
+  }
+  
 
   ngOnInit() {
     this.fetchChats();
@@ -148,6 +151,7 @@ export class ChatComponent {
   fetchChats() {
     this.subscriptions.add(
       this._chatService.getAllChats().subscribe((res) => {
+        console.log('chaaaaaaats', res.data);
         this.chats = res.data?.length ? res.data : [];
         this.chats.forEach((chat) => {
           this._socketService.emitEvent(
@@ -176,6 +180,19 @@ export class ChatComponent {
     this.subscriptions.add(
       this._chatService.creatOrGetAOneOnOneChat(userId).subscribe((res) => {
         if (res.data) this.selectedChat = res.data;
+        if (
+          this.isSelectedChatValid &&
+          this.isChatOpen &&
+          !this.selectedChat.lastMessage[0].isRead
+        ) {
+          this._messageService
+            .readAllMessages(this.selectedChat._id)
+            .subscribe(() => {
+              this.chats = this.chats.map((chat) =>
+                chat._id === this.selectedChat._id ? this.selectedChat : chat
+              );
+            });
+        }
         this.fetchChats();
         this._fetchAllMessages(res.data?._id);
       })
