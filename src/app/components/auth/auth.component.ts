@@ -157,7 +157,6 @@ export class AuthComponent {
 
   onResendOtp() {
     if (this.signupForm.valid) {
-      console.log('Signup:', this.signupForm.value);
       // TODO
     }
   }

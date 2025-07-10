@@ -151,7 +151,6 @@ export class ChatComponent {
   fetchChats() {
     this.subscriptions.add(
       this._chatService.getAllChats().subscribe((res) => {
-        console.log('chaaaaaaats', res.data);
         this.chats = res.data?.length ? res.data : [];
         this.chats.forEach((chat) => {
           this._socketService.emitEvent(
